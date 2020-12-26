@@ -1,25 +1,26 @@
-import logo from './logo.svg';
+import React, { useState } from 'react';
 import './App.css';
+import { AppContext } from './AppContext';
+import Game from './Game';
+import { apiStates, useApi } from './useApi.js'
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  const { state, error, data } = useApi('https://restcountries.eu/rest/v2/all');
+
+  switch (state) {
+    case apiStates.ERROR:
+      return <p>ERROR: {error || 'General error'}</p>;
+    case apiStates.SUCCESS:
+      return (
+        <React.Fragment>
+          <AppContext.Provider value={{ data }}>
+            <Game />
+          </AppContext.Provider>
+        </React.Fragment>
+      );
+    default:
+      return <p>loading..</p>;
+  }
 }
 
 export default App;
